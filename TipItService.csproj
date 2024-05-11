@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)TipItService.dll&quot; &quot;d:\dropbox\services\&quot; /D /Y /I" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="LaYumba.Functional" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="OneOf" Version="3.0.263" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WikiPages\WikiPages\WikiPages.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="InjectorMicroService">
+      <HintPath>D:\Dropbox\Services\InjectorMicroService.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
