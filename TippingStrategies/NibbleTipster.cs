@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using TipItService.Helpers;
 using TipItService.Implementations;
 using TipItService.Interfaces;
 using TipItService.Models;
+using WikiPages;
 
 namespace TipItService.TippingStrategies
 {
@@ -237,6 +239,44 @@ namespace TipItService.TippingStrategies
             return score;
         }
 
+        public string DumpRatingsAsMarkdown(
+            string leagueCode)
+        {
+            var list = Ratings.ToList();
+            list.Sort(
+                delegate (KeyValuePair<string, NibbleRating> pair1,
+                KeyValuePair<string, NibbleRating> pair2)
+                {
+                    return pair2.Value.Total()
+                        .CompareTo(
+                            pair1.Value.Total());
+                });
+            var page = new WikiPage();
+            page.AddHeading($"{leagueCode} Rankings", 4);
+            page.AddBlankLine();
+            var table = new WikiTable();
+            table.AddColumn("Team");
+            table.AddColumnRight("Off");
+            table.AddColumnRight("Def");
+            table.AddColumnRight("Tot");
+            table.AddColumn("RD-1");
+            table.AddColumn("RD-2");
+            table.AddColumn("RD-3");
+            table.AddColumn("RD-4");
+            table.AddRows(list.Count);
+            var nRow = 0;
+            foreach (KeyValuePair<string, NibbleRating> pair in list)
+            {
+                nRow++;
+                table.AddCell(nRow, 0, pair.Key);
+                table.AddCell(nRow, 1, pair.Value.Offence.ToString());
+                table.AddCell(nRow, 2, pair.Value.Defence.ToString());
+                table.AddCell(nRow, 3, pair.Value.Total().ToString());
+                //TODO: add Current Form see CurrentForm()
+            }
+            page.AddTable(table);
+            return page.PageContents();
+        }
     }
 
     public class NibbleRating

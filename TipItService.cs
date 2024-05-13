@@ -25,6 +25,8 @@ namespace TipItService
 
         public TippingState CurrentState { get; set; }
 
+        public List<MatchInfo> NewResults { get; set; } = new List<MatchInfo>();
+
         public TipItService(
             string dropBoxFolder)
         {
@@ -213,7 +215,10 @@ namespace TipItService
                             m,
                             allResults);
                         if (newMatch.Played())
+                        {
                             Console.WriteLine($"New Result {newMatch}");
+                            NewResults.Add(newMatch);
+                        }
                         newState.Add(newMatch);
                     }
                 });
@@ -614,6 +619,27 @@ namespace TipItService
                     && m.MatchDateTime.Year == season 
                     && m.Round == round)
                 .ToList();
-        
+
+        public string InjectRankings(
+            string leagueCode,
+            string tagName, 
+            MarkdownInjector mi)
+        {
+            var context = new TippingContext(
+                DropBoxFolder,
+                explain: false);
+
+            var tipster = new NibbleTipster(context);
+            tipster.Rate(leagueCode);
+
+            var md = tipster.DumpRatingsAsMarkdown(leagueCode);
+
+            mi.InjectMarkdown(
+                DashboardUtils.DashboardFile(
+                    context.CurrentSeason),
+                tagName,
+                md);
+            return md;
+        }
     }
 }
