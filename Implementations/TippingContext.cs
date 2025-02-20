@@ -18,7 +18,7 @@ namespace TipItService.Implementations
             string dropBoxFolder = "d:\\dropbox\\",
             bool explain = false)
         {
-            CurrentSeason = 2024;
+            CurrentSeason = 2025;
             DropBoxFolder = dropBoxFolder;
             LeagueDict = LoadLeagues(explain);
             LeagueSchedule = LoadSchedule(explain);
@@ -250,8 +250,6 @@ namespace TipItService.Implementations
                         continue;
                     if (g.GameDate.Year < 2020)
                         continue;
-                    //if (g.GameDate < DateTime.Now.AddDays(-300))
-                    //    continue;
                     sb.Append($"{g.GameResultShort(teamCode)} ");
                     teamGameCount++;
                 }
@@ -259,6 +257,36 @@ namespace TipItService.Implementations
                     break;
             }
             return sb.ToString();
+        }
+
+        public string FormFor(
+            string teamCode,
+            string leagueCode,
+            int gamesBack)
+        {
+            var result = string.Empty;
+            var teamGameCount = 0;
+            var nRounds = LeaguePastResults[leagueCode].Count;
+            for (int r = nRounds + 1; r > 1; r--)
+            {
+                if (LeaguePastResults[leagueCode].Count < r - 1)
+                    continue;
+                var games = LeaguePastResults[leagueCode][r - 1];
+                for (int i = games.Count; i > 0; i--)
+                {
+                    Game g = games[i - 1];
+                    if (!g.Involves(teamCode))
+                        continue;
+                    if (g.GameDate.Year < 2020)
+                        continue;
+
+                    result = $"{g.GameResultShort(teamCode)}";
+                    teamGameCount++;
+                }
+                if (teamGameCount == gamesBack)
+                    break;
+            }
+            return result;
         }
 
         public string CurrentForm(
@@ -276,8 +304,6 @@ namespace TipItService.Implementations
                         continue;
                     if (g.GameDate.Year != CurrentSeason)
                         continue;
-                    //if (g.GameDate < DateTime.Now.AddDays(-300))
-                    //    continue;
                     sb.AppendLine($"{g.GameLine(teamCode)} ");
                 }
             }
@@ -521,7 +547,8 @@ namespace TipItService.Implementations
             if (explain)
                 Console.WriteLine("Loading Schedules ...");
             var leagueSched = new Dictionary<string, Dictionary<int, List<Game>>>();
-            var eventStore = new ScheduleEventStore($"{DropBoxFolder}JSON\\schedule.json");
+            var eventStore = new ScheduleEventStore(
+                $"{DropBoxFolder}JSON\\schedule.json");
             var events = (List<ScheduleEvent>)eventStore
                 .Get<ScheduleEvent>("schedule");
             if (explain)

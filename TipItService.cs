@@ -19,7 +19,10 @@ namespace TipItService
 {
     public class TipItService
     {
+        public const int K_Season = 2025;
         public TippingComp Comp { get; }
+
+        public TippingContext TippingContext { get;  }
         public string DropBoxFolder { get; }
         public string TippingStateFileName { get; }
 
@@ -31,7 +34,7 @@ namespace TipItService
             string dropBoxFolder)
         {
             Comp = new TippingComp(
-                new TippingSeason(2024),
+                new TippingSeason(K_Season),
                 new List<TippingLeague>
                 {
                     new TippingLeague(
@@ -40,18 +43,21 @@ namespace TipItService
                         new RoundsInSeason(
                             25),
                         new SourceUrl(
-                            @"https://fixturedownload.com/feed/json/nrl-2024")),
+                            $"https://fixturedownload.com/feed/json/nrl-{K_Season}")),
                     new TippingLeague(
                         new LeagueCode(
                             "AFL"),
                         new RoundsInSeason(
                             22),
                         new SourceUrl(
-                            @"https://fixturedownload.com/feed/json/afl-2024")),
+                            $"https://fixturedownload.com/feed/json/afl-{K_Season}")),
                 });
             CurrentState = new TippingState();
             DropBoxFolder = dropBoxFolder;
             TippingStateFileName = $"{dropBoxFolder}JSON\\Results.json";
+            TippingContext = new TippingContext(
+                dropBoxFolder,
+                explain: false);
         }
 
         public int GetResultJson()
@@ -292,18 +298,15 @@ namespace TipItService
 
         public TipSet Tipset()
         {
-            var context = new TippingContext(
-                DropBoxFolder,
-                explain: false);
-            var tipster = new NibbleTipster(context);
+            var tipster = new NibbleTipster(TippingContext);
             var predictions = new List<PredictedResult>();
             tipster.ShowTips(
                 "NRL",
-                context.NextRound("NRL"));
+                TippingContext.NextRound("NRL"));
             predictions.AddRange(tipster.Predictions);
             tipster.ShowTips(
                 "AFL",
-                context.NextRound("AFL"));
+                TippingContext.NextRound("AFL"));
             predictions.AddRange(tipster.Predictions);
             return PredictionsToTipSet(predictions);
         }
@@ -324,11 +327,8 @@ namespace TipItService
             string tag, 
             MarkdownInjector mi)
         {
-            var context = new TippingContext(
-                DropBoxFolder,
-                explain: false);
-            var tipster = new NibbleTipster(context);
-            var round = context.NextRound(leagueCode);
+            var tipster = new NibbleTipster(TippingContext);
+            var round = TippingContext.NextRound(leagueCode);
             var tips = tipster.ShowTips(
                 leagueCode,
                 round);
@@ -339,7 +339,7 @@ namespace TipItService
                 leagueCode,
                 round);
             mi.InjectMarkdown(
-                DashboardUtils.DashboardFile(context.CurrentSeason),
+                DashboardUtils.DashboardFile(TippingContext.CurrentSeason),
                 tag,
                 md);
             return md;
@@ -355,7 +355,7 @@ namespace TipItService
         {
             var results = new EasyResults(easyTips)
             {
-                RoundResults = RoundResults(2024)
+                RoundResults = RoundResults(K_Season)
             };
             return results;
         }
@@ -477,37 +477,37 @@ namespace TipItService
                     new EasySelection
                     {
                         TeamCode = "CANB",
-                        PointsPerWin = 17,
+                        PointsPerWin = 14,
+                        ExpectedWins = 15
+                    },
+                    new EasySelection
+                    {
+                        TeamCode = "NQLD",
+                        PointsPerWin = 11,
                         ExpectedWins = 16
                     },
                     new EasySelection
                     {
-                        TeamCode = "DRAG",
-                        PointsPerWin = 20,
+                        TeamCode = "DOLP",
+                        PointsPerWin = 17,
                         ExpectedWins = 8
                     },
                     new EasySelection
                     {
-                        TeamCode = "SHRK",
-                        PointsPerWin = 13,
-                        ExpectedWins = 19
-                    },
-                    new EasySelection
-                    {
                         TeamCode = "PARR",
-                        PointsPerWin = 14,
-                        ExpectedWins = 12
+                        PointsPerWin = 13,
+                        ExpectedWins = 13
                     },
                     new EasySelection
                     {
                         TeamCode = "NEWC",
-                        PointsPerWin = 15,
-                        ExpectedWins = 11
+                        PointsPerWin = 16,
+                        ExpectedWins = 12
                     },
                     new EasySelection
                     {
                         LeagueCode = "AFL",
-                        TeamCode = "GEEL",
+                        TeamCode = "PORT",
                         PointsPerWin = 12,
                         ExpectedWins = 22
                     },
@@ -515,29 +515,29 @@ namespace TipItService
                     {
                         LeagueCode = "AFL",
                         TeamCode = "RICH",
-                        PointsPerWin = 16,
-                        ExpectedWins = 16
-                    },
-                    new EasySelection
-                    {
-                        LeagueCode = "AFL",
-                        TeamCode = "WB",
-                        PointsPerWin = 13,
-                        ExpectedWins = 14
-                    },
-                    new EasySelection
-                    {
-                        LeagueCode = "AFL",
-                        TeamCode = "HAW",
-                        PointsPerWin = 17,
+                        PointsPerWin = 24,
                         ExpectedWins = 9
                     },
                     new EasySelection
                     {
                         LeagueCode = "AFL",
-                        TeamCode = "FRE",
+                        TeamCode = "WB",
+                        PointsPerWin = 11,
+                        ExpectedWins = 19
+                    },
+                    new EasySelection
+                    {
+                        LeagueCode = "AFL",
+                        TeamCode = "HSTK",
                         PointsPerWin = 16,
-                        ExpectedWins = 8
+                        ExpectedWins = 9
+                    },
+                    new EasySelection
+                    {
+                        LeagueCode = "AFL",
+                        TeamCode = "MELB",
+                        PointsPerWin = 14,
+                        ExpectedWins = 13
                     },
                 }
             };
@@ -625,18 +625,14 @@ namespace TipItService
             string tagName, 
             MarkdownInjector mi)
         {
-            var context = new TippingContext(
-                DropBoxFolder,
-                explain: false);
-
-            var tipster = new NibbleTipster(context);
+            var tipster = new NibbleTipster(TippingContext);
             tipster.Rate(leagueCode);
 
             var md = tipster.DumpRatingsAsMarkdown(leagueCode);
 
             mi.InjectMarkdown(
                 DashboardUtils.DashboardFile(
-                    context.CurrentSeason),
+                    TippingContext.CurrentSeason),
                 tagName,
                 md);
             return md;

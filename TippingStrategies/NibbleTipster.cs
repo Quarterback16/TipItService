@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using TipItService.Helpers;
@@ -272,7 +271,11 @@ namespace TipItService.TippingStrategies
                 table.AddCell(nRow, 1, pair.Value.Offence.ToString());
                 table.AddCell(nRow, 2, pair.Value.Defence.ToString());
                 table.AddCell(nRow, 3, pair.Value.Total().ToString());
-                //TODO: add Current Form see CurrentForm()
+                // Current Form 
+                table.AddCell(nRow, 4, Context.FormFor(pair.Key, leagueCode, 1 ));
+                table.AddCell(nRow, 5, Context.FormFor(pair.Key, leagueCode, 2));
+                table.AddCell(nRow, 6, Context.FormFor(pair.Key, leagueCode, 3));
+                table.AddCell(nRow, 7, Context.FormFor(pair.Key, leagueCode, 4));
             }
             page.AddTable(table);
             return page.PageContents();
