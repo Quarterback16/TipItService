@@ -18,7 +18,7 @@ namespace TipItService.Implementations
             string dropBoxFolder = "d:\\dropbox\\",
             bool explain = false)
         {
-            CurrentSeason = 2025;
+            CurrentSeason = DateTime.Now.Year;  // just make this a fn of the Date - dont over think it
             DropBoxFolder = dropBoxFolder;
             LeagueDict = LoadLeagues(explain);
             LeagueSchedule = LoadSchedule(explain);
