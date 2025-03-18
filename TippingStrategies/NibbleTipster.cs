@@ -95,8 +95,7 @@ namespace TipItService.TippingStrategies
             var sched = Context.LeagueSchedule[league][round];
             foreach (var game in sched)
             {
-                var prediction = Tip(
-                    game);
+                var prediction = Tip(game);
 
                 Predictions.Add(
                     prediction);

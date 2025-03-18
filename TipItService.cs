@@ -528,7 +528,7 @@ namespace TipItService
                     new EasySelection
                     {
                         LeagueCode = "AFL",
-                        TeamCode = "HSTK",
+                        TeamCode = "STK",
                         PointsPerWin = 16,
                         ExpectedWins = 9
                     },
