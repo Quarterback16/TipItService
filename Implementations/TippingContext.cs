@@ -737,8 +737,6 @@ namespace TipItService.Implementations
             }
         }
 
-        #region  IDisposable
-
         public bool IsDisposed { get; private set; }
 
         public int ScheduledRoundCount(
@@ -785,6 +783,31 @@ namespace TipItService.Implementations
             IsDisposed = true;
         }
 
-        #endregion
+        public List<Game> MissingResults(
+            string leagueCode,
+            DateTime queryDate)
+        {
+            var missingResultGames = new List<Game>();
+            var eventStore = new ResultEventStore(DropBoxFolder);
+            var events = (List<ResultEvent>)eventStore.Get<ResultEvent>(
+                "results");
+            foreach (var e in events)
+            {
+                var theGame = new Game(e);
+
+                if (theGame.GameDate.Year != DateTime.Now.Year)
+                    continue;
+                if (theGame.League != leagueCode)
+                    continue;
+                if (theGame.GameDate > queryDate)
+                    continue;
+
+                if ( theGame.AwayScore == null && theGame.HomeScore == null)
+                {
+                    missingResultGames.Add(theGame);
+                }
+            }
+            return missingResultGames;
+        }
     }
 }

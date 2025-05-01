@@ -17,5 +17,9 @@ namespace TipItService.Interfaces
         void ProcessLeagueSchedule(
             string leagueCode,
             IGameProcessor processor);
+
+        List<Game> MissingResults(
+            string leagueCode,
+            DateTime queryDate);
     }
 }
