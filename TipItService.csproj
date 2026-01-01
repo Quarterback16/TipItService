@@ -14,14 +14,4 @@
     <PackageReference Include="OneOf" Version="3.0.263" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\WikiPages\WikiPages\WikiPages.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="InjectorMicroService">
-      <HintPath>D:\Dropbox\Services\InjectorMicroService.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
