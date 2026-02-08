@@ -125,7 +125,7 @@ namespace TipItService.Domain
                     case "ESS":
                         return "Essendon";
                     case "GWS":
-                        return "GWS Giants";
+                        return "GWS GIANTS";
                     case "STK":
                         return "St Kilda";
                     case "CARL":
@@ -135,7 +135,7 @@ namespace TipItService.Domain
                     case "PORT":
                         return "Port Adelaide";
                     case "GCFC":
-                        return "Gold Coast Suns";
+                        return "Gold Coast SUNS";
                     case "HAW":
                         return "Hawthorn";
                     case "GEEL":
