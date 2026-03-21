@@ -377,7 +377,9 @@ namespace TipItService
                 new WikiColumn("EW"),
             };
             var nRounds = easyResults.RoundResults
-                .GroupBy(er => er.Round).Select(g => g.First()).ToList();
+                .GroupBy(er => er.Round)
+                .Select(g => g.First())
+                .ToList();
             nRounds.ForEach(n =>
             {
                 cols.Add(new WikiColumnRight(n.Round.ToString()));
@@ -478,67 +480,67 @@ namespace TipItService
                 {
                     new EasySelection
                     {
-                        TeamCode = "CANB",
-                        PointsPerWin = 14,
-                        ExpectedWins = 15
-                    },
-                    new EasySelection
-                    {
-                        TeamCode = "NQLD",
-                        PointsPerWin = 11,
-                        ExpectedWins = 16
+                        TeamCode = "SHRK",
+                        PointsPerWin = 10,
+                        ExpectedWins = 18
                     },
                     new EasySelection
                     {
                         TeamCode = "DOLP",
-                        PointsPerWin = 17,
-                        ExpectedWins = 8
+                        PointsPerWin = 11,
+                        ExpectedWins = 15
                     },
                     new EasySelection
                     {
-                        TeamCode = "PARR",
-                        PointsPerWin = 13,
+                        TeamCode = "CANB",
+                        PointsPerWin = 10,
                         ExpectedWins = 13
                     },
                     new EasySelection
                     {
-                        TeamCode = "NEWC",
-                        PointsPerWin = 16,
-                        ExpectedWins = 12
+                        TeamCode = "NZW",
+                        PointsPerWin = 13,
+                        ExpectedWins = 10
                     },
                     new EasySelection
                     {
-                        LeagueCode = "AFL",
-                        TeamCode = "PORT",
-                        PointsPerWin = 12,
-                        ExpectedWins = 22
-                    },
-                    new EasySelection
-                    {
-                        LeagueCode = "AFL",
-                        TeamCode = "RICH",
-                        PointsPerWin = 24,
-                        ExpectedWins = 9
+                        TeamCode = "DRAG",
+                        PointsPerWin = 19,
+                        ExpectedWins = 2  // Michael made me do it
                     },
                     new EasySelection
                     {
                         LeagueCode = "AFL",
                         TeamCode = "WB",
-                        PointsPerWin = 11,
-                        ExpectedWins = 19
+                        PointsPerWin = 10,
+                        ExpectedWins = 22
                     },
                     new EasySelection
                     {
                         LeagueCode = "AFL",
-                        TeamCode = "STK",
+                        TeamCode = "MELB",
+                        PointsPerWin = 20,
+                        ExpectedWins = 11
+                    },
+                    new EasySelection
+                    {
+                        LeagueCode = "AFL",
+                        TeamCode = "COLL",
+                        PointsPerWin = 12,
+                        ExpectedWins = 13
+                    },
+                    new EasySelection
+                    {
+                        LeagueCode = "AFL",
+                        TeamCode = "CARL",
                         PointsPerWin = 16,
                         ExpectedWins = 9
                     },
                     new EasySelection
                     {
                         LeagueCode = "AFL",
-                        TeamCode = "MELB",
-                        PointsPerWin = 14,
+                        TeamCode = "FRE",
+                        PointsPerWin = 11,
                         ExpectedWins = 13
                     },
                 }

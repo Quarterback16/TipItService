@@ -13,5 +13,13 @@ namespace TipItService.Models
         public int? AwayScore { get; set; }
         public string EventType { get; set; }
         public string League { get; set; }
+
+        public override string ToString() =>
+        
+            $"{Round} {GameDate:d} {Location} {HomeTeam} vs {AwayTeam} " +
+                   $"{(HomeScore.HasValue ? HomeScore.Value.ToString() : "N/A")} - " +
+                   $"{(AwayScore.HasValue ? AwayScore.Value.ToString() : "N/A")} " +
+                   $"({EventType}, {League})";
+        
     }
 }

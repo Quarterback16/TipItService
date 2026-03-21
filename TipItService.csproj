@@ -12,10 +12,7 @@
     <PackageReference Include="LaYumba.Functional" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OneOf" Version="3.0.263" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\WikiPages\WikiPages\WikiPages.csproj" />
+    <PackageReference Include="WikiPages" Version="1.0.5" />
   </ItemGroup>
 
   <ItemGroup>
