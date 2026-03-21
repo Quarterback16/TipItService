@@ -19,7 +19,8 @@ namespace TipItService
 {
     public class TipItService
     {
-        public const int K_Season = 2025;
+        public int CurrentSeason { get; set; }
+
         public TippingComp Comp { get; }
 
         public TippingContext TippingContext { get;  }
@@ -33,8 +34,9 @@ namespace TipItService
         public TipItService(
             string dropBoxFolder)
         {
+            CurrentSeason = DateTime.Now.Year;
             Comp = new TippingComp(
-                new TippingSeason(K_Season),
+                new TippingSeason(CurrentSeason),
                 new List<TippingLeague>
                 {
                     new TippingLeague(
@@ -43,14 +45,14 @@ namespace TipItService
                         new RoundsInSeason(
                             25),
                         new SourceUrl(
-                            $"https://fixturedownload.com/feed/json/nrl-{K_Season}")),
+                            $"https://fixturedownload.com/feed/json/nrl-{CurrentSeason}")),
                     new TippingLeague(
                         new LeagueCode(
                             "AFL"),
                         new RoundsInSeason(
                             22),
                         new SourceUrl(
-                            $"https://fixturedownload.com/feed/json/afl-{K_Season}")),
+                            $"https://fixturedownload.com/feed/json/afl-{CurrentSeason}")),
                 });
             CurrentState = new TippingState();
             DropBoxFolder = dropBoxFolder;
@@ -355,7 +357,7 @@ namespace TipItService
         {
             var results = new EasyResults(easyTips)
             {
-                RoundResults = RoundResults(K_Season)
+                RoundResults = RoundResults(CurrentSeason)
             };
             return results;
         }
