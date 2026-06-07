@@ -14,8 +14,7 @@ namespace TipItService.Implementations
         public TeamEventStore(
             string dropboxFolder)
         {
-            var r = new StreamReader($"{dropboxFolder}JSON//teams.json");
-            var json = r.ReadToEnd();
+            var json = File.ReadAllText($"{dropboxFolder}JSON//teams.json");
             Events = JsonConvert.DeserializeObject<List<AddTeamEvent>>(json);
         }
 

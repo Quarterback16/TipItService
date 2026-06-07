@@ -26,6 +26,7 @@ namespace TipItService
         public TippingContext TippingContext { get;  }
         public string DropBoxFolder { get; }
         public string TippingStateFileName { get; }
+        public string EasyPointsFileName { get; }
 
         public TippingState CurrentState { get; set; }
 
@@ -57,6 +58,7 @@ namespace TipItService
             CurrentState = new TippingState();
             DropBoxFolder = dropBoxFolder;
             TippingStateFileName = $"{dropBoxFolder}JSON\\Results.json";
+            EasyPointsFileName = $"{dropBoxFolder}JSON\\EasyPoints.json";
             TippingContext = new TippingContext(
                 dropBoxFolder,
                 explain: false);
@@ -116,7 +118,15 @@ namespace TipItService
             return matches;
         }
 
-        private List<MatchInfo> TippingStateFrom(
+        private List<EasyPointsJson> LoadEasyPointsFromJson()
+        {
+            var jsonString = File.ReadAllText(
+                EasyPointsFileName);
+            return JsonConvert.DeserializeObject<List<EasyPointsJson>>(
+               jsonString);
+        }
+
+        private static List<MatchInfo> TippingStateFrom(
             List<MatchEventJson> matches)
         {
             var list = new List<MatchInfo>();
@@ -247,7 +257,7 @@ namespace TipItService
             return allResults;
         }
 
-        private MatchInfo FindResult(
+        private static MatchInfo FindResult(
             MatchInfo m,
             List<MatchJson> allResults)
         {
@@ -463,7 +473,9 @@ namespace TipItService
             return totalPoints;
         }
 
-        private int PointsForWin(string teamCode, EasyResults easyResults) =>
+        private static int PointsForWin(
+            string teamCode, 
+            EasyResults easyResults) =>
 
             easyResults.Selections.EasyTips
                 .Find(s => s.TeamCode == teamCode)
@@ -546,6 +558,16 @@ namespace TipItService
                 }
             };
 
+        public List<RoundResult> RoundResults(
+            int season,
+            string league)
+        {
+            var results = RoundResults(season);
+            return results
+                .Where(r => r.League.Code == league)
+                .ToList();
+        }
+
         public List<RoundResult> RoundResults(int season)
         {
             LoadTippingState();
@@ -580,7 +602,38 @@ namespace TipItService
             return results;
         }
 
-        private bool MatchInvolvesHomeTeam(
+        public List<RoundResult> AllRoundResults(int season)
+        {
+            LoadTippingState();
+            var results = new List<RoundResult>();
+            CurrentState.Matches.ForEach(
+                m =>
+                {
+                    if (m.MatchDateTime.Year == season && m.Played())
+                    {
+                        results.Add(
+                            RoundResult.From(
+                                m,
+                                m.HomeTeam.Code));
+                        results.Add(
+                            RoundResult.From(
+                                m,
+                                m.AwayTeam.Code));
+                    }
+                });
+            return results;
+        }
+        public List<RoundResult> AllRoundResults(
+            int season,
+            string league)
+        {
+            var results = AllRoundResults(season);
+            return results
+                .Where(r => r.League.Code == league)
+                .ToList();
+        }
+
+        private static bool MatchInvolvesHomeTeam(
             MatchInfo m,
             List<LeagueTeam> leagueTeams)
         {
@@ -590,7 +643,7 @@ namespace TipItService
             return involves.Any();
         }
 
-        private bool MatchInvolvesAwayTeam(
+        private static bool MatchInvolvesAwayTeam(
             MatchInfo m, 
             List<LeagueTeam> leagueTeams)
         {
@@ -641,5 +694,52 @@ namespace TipItService
                 md);
             return md;
         }
+
+        public string MarcoReport(
+            string leagueCode)
+        {
+            var roundResults = AllRoundResults(
+                CurrentSeason,
+                leagueCode);
+            var easyPoints = LoadEasyPointsFromJson();
+            var easyTeams = EasyTeams(GetEasiestTips());
+
+            var teamPoints = easyPoints 
+                .Where(p => p.Season == CurrentSeason.ToString() 
+                        && p.LeagueCode == leagueCode)
+                .GroupBy(p => p.TeamCode)
+                .Select( g => new MarcoInfo
+                {
+                    Team = g.Key,
+                    LeagueTeam = LeagueTeam.From(
+                        new LeagueCode(leagueCode),
+                        g.Key),
+                    EasyReward = g.First().EasyPoints,
+                    Selected = easyTeams.Any(et => et.Code == g.Key)
+                })
+                .ToList();
+
+            foreach (var tp in teamPoints)
+            {
+                var teamWins = roundResults
+                    .Count(rr => rr.TeamCode == tp.Team 
+                        && rr.Result.Match(w => true, l => false, u => false));
+ 
+                tp.EasyPointTotal += teamWins * tp.EasyReward;
+                tp.Wins = teamWins;
+            }
+
+            return MarkdownHelper.MarcoReportToMd(
+                teamPoints, 
+                leagueCode, 
+                CurrentSeason);
+        }
+
+        public string MarcoReport() =>
+        
+            new StringBuilder()
+                .AppendLine( MarcoReport("NRL"))
+                .AppendLine( MarcoReport("AFL"))
+                .ToString();        
     }
 }

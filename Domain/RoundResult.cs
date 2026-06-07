@@ -5,15 +5,18 @@ namespace TipItService.Domain
 {
     public class RoundResult
     {
+        public LeagueCode League { get; set; }
         public int Round { get; set; }
         public string TeamCode { get; set; }
         public OneOf<EasyWin, EasyLoss, EasyUnknown> Result { get; set; }
 
         private RoundResult(
+            LeagueCode league,
             int round,
             string teamCode,
             OneOf<EasyWin, EasyLoss, EasyUnknown> result)
         {
+            League = league;
             Round = round;
             TeamCode = teamCode;
             Result = result;
@@ -36,6 +39,7 @@ namespace TipItService.Domain
                     "No team code", nameof(teamCode));
             }
             return new RoundResult(
+                matchInfo.League,
                 matchInfo.Round,
                 teamCode,
                 ResultFor(teamCode, matchInfo));            
