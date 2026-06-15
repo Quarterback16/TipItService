@@ -83,5 +83,9 @@ namespace TipItService.Domain
         }
 
         public bool IsLoser(string teamCode) => !IsWinner(teamCode);
+
+        public string ResultLine() =>
+        
+            $"{MatchDateTime.ToString("ddd yyyy-MM-dd")} : {HomeTeam.Code,-4} vs {AwayTeam.Code,-4} {HomeScore,3} -{AwayScore,3}";
     }
 }

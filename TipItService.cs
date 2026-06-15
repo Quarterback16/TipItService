@@ -104,7 +104,7 @@ namespace TipItService
 
         public int LoadTippingState()
         {
-            List<MatchEventJson> matches = LoadMatchesFromJson();
+            var matches = LoadMatchesFromJson();
             CurrentState.Matches = TippingStateFrom(matches);
             return matches.Count;
         }
@@ -740,6 +740,35 @@ namespace TipItService
             new StringBuilder()
                 .AppendLine( MarcoReport("NRL"))
                 .AppendLine( MarcoReport("AFL"))
-                .ToString();        
+                .ToString();
+
+        public string LatestResults() =>
+        
+            new StringBuilder()
+                .AppendLine(LatestResults("NRL"))
+                .AppendLine(LatestResults("AFL"))
+                .ToString();
+
+        private string LatestResults(
+            string leagueCode,
+            int howMany = 8)
+        {
+            LoadTippingState();
+
+            var leagueResults = CurrentState.Matches
+                .Where(m => m.League.Code == leagueCode)
+                .Where(m => m.Played())
+                .ToList();
+
+            var lastTen = leagueResults
+                .Skip(Math.Max(0, leagueResults.Count - howMany))
+                .ToList();
+
+            return MarkdownHelper.LastResultsToMd(
+                lastTen,
+                leagueCode,
+                CurrentSeason,
+                howMany);
+        }
     }
 }

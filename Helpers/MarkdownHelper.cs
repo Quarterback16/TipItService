@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TipItService.Domain;
 using TipItService.Models;
 using WikiPages;
 
@@ -39,5 +40,21 @@ namespace TipItService.Helpers
             var highlight = teamPoint.Selected ? "==" : "";
             return $"{highlight}{teamPoint.LeagueTeam.JsonCode()}{highlight}";
         }
+
+        public static string LastResultsToMd(
+            List<MatchInfo> results,
+            string leagueCode,
+            int season,
+            int howMany)
+        {
+            var page = new WikiPageWithTable();
+            page.AddHeading($"Latest {howMany} Results {leagueCode} {season}", 2);
+            page.AddBlankLine();
+
+            foreach (var result in results)
+                page.AddLine($"- {result.ResultLine()}");
+            
+            return page.PageContents();
+        }
     }
-}   
+}     
